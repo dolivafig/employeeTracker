@@ -20,7 +20,7 @@ VALUES
 
 SELECT * FROM role;
 
-INSERT INTO employee( first_name, last_name, role_id, manager_id)
+INSERT INTO employee( first_name, last_name, dep, manager_id)
 VALUES
 ("John", "Doe", 1, 1),
 ("Mike", "Chan", 2, 1),

@@ -34,22 +34,23 @@ function checklist() {
         if (option == "View all departments") {
             console.log('View all departments')
             db.query('SELECT id, name FROM department', function (err, results) {
-                console.table(results);})
-                checklist();
-        
+                console.table(results);
+            })
+            checklist();
+
 
         } else if (option == "View all roles") {
             console.log('View all roles')
             // job title, role id, the department that role belongs to, and the salary for that role
             db.query('SELECT role.id, role.title, department.name AS department, role.salary FROM role JOIN department ON role.department_id = department.id', function (err, results) {
                 console.table(results);
-                })
+            })
             checklist();
 
         } else if (option == "View all employees") {
             console.log('View all employees')
             // employee data, including employee ids, first names, last names, job titles, departments, salaries, and managers that the employees report to
-            db.query('SELECT employee.id, employee.first_name, employee.last_name, role.title AS job_title, department.name AS department, role.salary FROM employee JOIN role ON employee.manager_id = role.id JOIN department ON role.department_id = department.id' , function (err, results) {
+            db.query('SELECT employee.id, employee.first_name, employee.last_name, role.title AS job_title, department.name AS department, role.salary FROM employee JOIN role ON employee.manager_id = role.id JOIN department ON role.department_id = department.id', function (err, results) {
                 console.table(results);
             })
             checklist();
@@ -87,97 +88,96 @@ app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });
 
-async function query () {
-    try{
-        db.query('SELECT id, name FROM department', await function (err, results) {
-    console.table(results);});
-}catch(err) {console.log(err)}
-checklist();
-}
-
-async function addDep () {
-    try{
+async function addDep() {
+    try {
         const department = await inquirer.prompt({
             type: 'input',
             message: 'Name of new department?',
             name: 'newDep',
         });
-        if (department.newDep){
+        if (department.newDep) {
             db.query('INSERT INTO department (name)' + "VALUES (?)", department.newDep, (err, result) => {
-                if(err) {
+                if (err) {
                     console.log(err)
                 };
-                console.log("Successfully added to db")}
-                )};
-                checklist();
-            }catch(err){
-                console.log(err);
+                console.log("Successfully added to db")
             }
+            )
+        };
+        checklist();
+    } catch (err) {
+        console.log(err);
+    }
 };
 
-async function addRole () {
+async function addRole() {
     const role = await inquirer.prompt([
-    {
-        type: 'input',
-    message: 'role title?',
-    name: 'roleTitle',
-},
-{
-    type: 'input',
-message: 'role salary?',
-name: 'roleSalary',
-},
-{
-    type: 'input',
-message: 'under what department (type: department id) does this role fall into?',
-name: 'roleDep',
-}
-]);
-    console.log(role);
+        {
+            type: 'input',
+            message: 'Role title?',
+            name: 'roleTitle',
+        },
+        {
+            type: 'input',
+            message: 'Role salary?',
+            name: 'roleSalary',
+        },
+        {
+            type: 'input',
+            message: 'Under what department (type: department id) does this role fall into?',
+            name: 'roleDep',
+        }
+    ]);
 
-    db.query('INSERT INTO role (id, first_name, last_name, role_id, manager_id)' + "VALUES (?,?,?,?,?)", role.roleId, role.roleTitle, role.roleSalary, role.roleDep, (err, result) => {
-    console.log("Successfully added to db")}
-    )
-    
-    checklist();
+    db.query('INSERT INTO role (title, salary, department_id) VALUES (?, ?, ?)', [role.roleTitle, role.roleSalary, role.roleDep], (err, result) => {
+        if (err) {
+            console.log(err);
+        } else {
+            console.log("Successfully added to db");
+        }
+        checklist();
+    });
 };
 
-async function addEmployee () {
+async function addEmployee() {
     const employee = await inquirer.prompt([
-    {
-        type: 'input',
-    message: 'first name of employee?',
-    name: 'first',
-},
-{
-    type: 'input',
-message: 'last name of employee?',
-name: 'last',
-},
-{
-    type: 'input',
-message: 'What is the department of the employee? (dep #)',
-name: 'dep',
-},
-{
-    type: 'input',
-message: 'Employee manager ID?',
-name: 'mId',
-},
-]);
-if (employee.newEmp && employee.first && employee.last && employee.role && employee.mId){
-    db.query('INSERT INTO employee (id, first_name, last_name, dep_id, manager_id)' + "VALUES (?,?,?,?,?)", 
-    employee.newEmp, employee.first, employee.last, employee.dep, employee.mId, (err, result) => {
-    if(err) {
-        console.log(err)
-    };
-    console.log("Successfully added to db")
-    console.log(result)}
-    )};
-    checklist();
-};
+        {
+            type: 'input',
+            message: 'first name of employee?',
+            name: 'first',
+        },
+        {
+            type: 'input',
+            message: 'last name of employee?',
+            name: 'last',
+        },
+        {
+            type: 'input',
+            message: 'What is the department of the employee? (dep #)',
+            name: 'dep',
+        },
+        {
+            type: 'input',
+            message: 'Employee manager ID?',
+            name: 'mId',
+        },
+    ]);
 
-async function update () {
+        db.query(
+            'INSERT INTO employee (first_name, last_name, dep, manager_id) VALUES (?,?,?,?)',
+            [employee.first, employee.last, employee.dep, employee.mId],
+            (err, result) => {
+                if (err) {
+                    console.log(err);
+                };
+                console.log('Successfully added to db');
+                console.log(employee);
+                checklist();
+            }
+        );
+}
+
+async function update() {
     const employ = await inquirer.prompt([{
         type: 'input',
         message: 'Employee you want to upate(type id number)?',
@@ -186,13 +186,13 @@ async function update () {
     {
         type: 'input',
         message: 'Employee new role id?',
-        name: 'newRole', 
+        name: 'newRole',
     },
     ]);
 
     if (employ.empId && employ.newRole) {
         db.query(
-            'UPDATE employee SET role_id = ? WHERE id = ?',
+            'UPDATE employee SET dep = ? WHERE id = ?',
             [employ.newRole, employ.empId],
             (err, result) => {
                 if (err) {
