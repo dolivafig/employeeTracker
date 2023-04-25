@@ -199,7 +199,7 @@ async function update() {
                     console.log(err);
                 } else {
                     console.log("Successfully updated db");
-                    console.log(result);
+                    console.log(employ);
                     checklist();
                 }
             }

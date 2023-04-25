@@ -32,4 +32,4 @@ THEN I am prompted to select an employee to update and their new role and this i
 ![alt text](./public/assets/)
 
 ## Click [here](https://github.com/dolivafig) to see the repo on gitHub.
-## Click [here]() to run the app using Heroku.
+## Click [here](https://drive.google.com/file/d/16sKyuaUP4yi_tykYlGArWObNKeF1YIwj/view) to view a demo of the app working.
